@@ -1,0 +1,394 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+
+    --novel-highlight-default: #ffffff;
+    --novel-highlight-purple: #f6f3f8;
+    --novel-highlight-red: #fdebeb;
+    --novel-highlight-yellow: #fbf4a2;
+    --novel-highlight-blue: #c1ecf9;
+    --novel-highlight-green: #acf79f;
+    --novel-highlight-orange: #faebdd;
+    --novel-highlight-pink: #faf1f5;
+    --novel-highlight-gray: #f1f1ef;
+  }
+
+  /* Modern Custom Scrollbar Styles */
+  .chat-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(107, 114, 128, 0.6) transparent;
+  }
+
+  .chat-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .chat-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+  }
+
+  .chat-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(107, 114, 128, 0.6);
+    border-radius: 10px;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .chat-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(107, 114, 128, 0.8);
+    transform: scaleX(1.2);
+  }
+
+  .chat-scrollbar::-webkit-scrollbar-thumb:active {
+    background: rgba(107, 114, 128, 1);
+  }
+
+  /* Dark mode scrollbar */
+  .dark .chat-scrollbar {
+    scrollbar-color: rgba(113, 113, 122, 0.3) transparent;
+  }
+
+  .dark .chat-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(113, 113, 122, 0.3);
+  }
+
+  .dark .chat-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(113, 113, 122, 0.5);
+  }
+
+  .dark .chat-scrollbar::-webkit-scrollbar-thumb:active {
+    background: rgba(113, 113, 122, 0.7);
+  }
+
+  /* Smooth scroll behavior for chat */
+  .chat-scrollbar {
+    scroll-behavior: smooth;
+  }
+
+  .dark {
+    background-color: #191919 !important;
+
+    .bg-background {
+      background-color: #191919 !important;
+    }
+
+    .sidebar-shadow {
+      box-shadow: rgb(42, 42, 42) -1px 0px 0px 0px inset;
+    }
+  }
+
+  .dark {
+    --background: #191919;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+
+    --novel-highlight-default: #000000;
+    --novel-highlight-purple: #3f2c4b;
+    --novel-highlight-red: #5c1a1a;
+    --novel-highlight-yellow: #5c4b1a;
+    --novel-highlight-blue: #1a3d5c;
+    --novel-highlight-green: #1a5c20;
+    --novel-highlight-orange: #5c3a1a;
+    --novel-highlight-pink: #5c1a3a;
+    --novel-highlight-gray: #3a3a3a;
+
+    span {
+      color: white !important;
+    }
+
+    strong {
+      color: white !important;
+    }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background dark:bg-background  text-foreground;
+  }
+}
+
+pre {
+  background: #0d0d0d;
+  border-radius: 0.5rem;
+  color: #fff;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica,
+    "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+  padding: 0.75rem 1rem;
+
+  code {
+    background: none;
+    color: inherit;
+    font-size: 0.8rem;
+    padding: 0;
+  }
+
+  .hljs-comment,
+  .hljs-quote {
+    color: #616161;
+  }
+
+  .hljs-variable,
+  .hljs-template-variable,
+  .hljs-attribute,
+  .hljs-tag,
+  .hljs-name,
+  .hljs-regexp,
+  .hljs-link,
+  .hljs-name,
+  .hljs-selector-id,
+  .hljs-selector-class {
+    color: #f98181;
+  }
+
+  .hljs-number,
+  .hljs-meta,
+  .hljs-built_in,
+  .hljs-builtin-name,
+  .hljs-literal,
+  .hljs-type,
+  .hljs-params {
+    color: #fbbc88;
+  }
+
+  .hljs-string,
+  .hljs-symbol,
+  .hljs-bullet {
+    color: #b9f18d;
+  }
+
+  .hljs-title,
+  .hljs-section {
+    color: #faf594;
+  }
+
+  .hljs-keyword,
+  .hljs-selector-tag {
+    color: #70cff8;
+  }
+
+  .hljs-emphasis {
+    font-style: italic;
+  }
+
+  .hljs-strong {
+    font-weight: 700;
+  }
+}
+
+.mt-2 {
+  margin-top: 0.5rem !important;
+}
+.f-500 {
+  font-weight: 500;
+}
+
+.txt-btn dark:text-white {
+  color: rgb(50, 48, 44);
+}
+
+.dark .txt-btn dark:text-white {
+  color: white;
+}
+
+.bg-gray-100 {
+  background: rgba(0, 0, 0, 0.03);
+}
+.txt-eclips {
+  max-width: 110px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  display: inline-block !important;
+}
+.mr-1 {
+  margin-right: 0.25rem !important;
+}
+
+@layer components {
+  .ProseMirror td,
+  .ProseMirror th {
+    @apply border border-muted text-sm leading-tight align-top;
+  }
+
+  .ProseMirror table {
+    @apply w-full border-collapse;
+  }
+
+  .ProseMirror td > *,
+  .ProseMirror th > * {
+    @apply m-0 p-0;
+  }
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  max-width: 70vw;
+}
+@media (min-width: 640px) {
+  /* sm */
+  .tableWrapper {
+    max-width: 80vw;
+  }
+}
+
+@media (min-width: 1536px) {
+  /* 2xl */
+  .tableWrapper {
+    max-width: 90vw;
+  }
+}
+
+/* chat css */
+
+@keyframes single-revolution {
+  0% {
+    stroke-dasharray: 20 1708;
+    stroke-dashoffset: 0;
+    opacity: 0.5;
+  }
+  50% {
+    stroke-dasharray: 864 864;
+    stroke-dashoffset: -432;
+    opacity: 0.5;
+  }
+  100% {
+    stroke-dasharray: 20 1708;
+    stroke-dashoffset: -1728;
+    opacity: 0;
+  }
+}
+
+.single-revolution-glow {
+  animation: single-revolution 1.5s ease-in-out forwards, pulse-glow 1.5s ease-in-out forwards;
+}
+
+.single-revolution-white {
+  animation: single-revolution 1.5s ease-in-out forwards, pulse-white-glow 1.5s ease-in-out forwards;
+}
+
+.single-revolution-border {
+  animation: single-revolution 1.5s ease-in-out forwards;
+}
+
+.single-revolution-border-loop {
+  animation: single-revolution 1.5s linear infinite;
+}
+
+.single-revolution-glow-loop {
+  animation: single-revolution 1.5s linear infinite, pulse-glow 1.5s linear infinite;
+}
+
+.single-revolution-white-loop {
+  animation: single-revolution 1.5s linear infinite, pulse-white-glow 1.5s linear infinite;
+}
+
+@keyframes pulse-glow {
+  0% {
+    stroke-width: 6px;
+  }
+  50% {
+    stroke-width: 32px;
+  }
+  100% {
+    stroke-width: 0;
+  }
+}
+
+@keyframes pulse-white-glow {
+  0% {
+    stroke-width: 6px;
+  }
+  50% {
+    stroke-width: 8px;
+  }
+  100% {
+    stroke-width: 0;
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #5e7ce2 0%, #4d8aff 16%, #8a2be2 32%, #a162e8 48%, #ff6b9e 80%, #5e7ce2 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Assistant thinking glow animation */
+@keyframes assistant-pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(161, 98, 232, 0.3), 0 4px 12px rgba(74, 85, 104, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 12px 6px rgba(255, 107, 158, 0.25), 0 0 8px 4px rgba(77, 138, 255, 0.2), 0 4px 12px
+      rgba(74, 85, 104, 0.2);
+  }
+}
+.assistant-thinking-glow {
+  animation: assistant-pulse-glow 1.2s infinite;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

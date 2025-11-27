@@ -1,0 +1,79 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    "**/.env.*local"
+  ],
+  "globalEnv": [
+    "MONGODB_URI",
+    "NEXTAUTH_API_URL",
+    "GITHUB_REPO",
+    "GITHUB_TOKEN",
+    "GITHUB_USERNAME",
+    "MAIL_LINK",
+    "PINECONE_API_KEY",
+    "OPENAI_API_KEY",
+    "EMBEDDING_MODEL",
+    "PINECONE_INDEX"
+  ],
+  "tasks": {
+    "topo": {
+      "dependsOn": [
+        "^topo"
+      ]
+    },
+    "build": {
+      "dependsOn": [
+        "^build",
+        "typecheck"
+      ],
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**"
+      ]
+    },
+    "typecheck": {
+      "dependsOn": [
+        "^topo"
+      ],
+      "outputs": []
+    },
+    "lint": {
+      "dependsOn": [
+        "^topo"
+      ]
+    },
+    "format": {
+      "dependsOn": [
+        "^topo"
+      ]
+    },
+    "lint:fix": {
+      "dependsOn": [
+        "^topo"
+      ]
+    },
+    "format:fix": {
+      "dependsOn": [
+        "^topo"
+      ]
+    },
+    "check-types": {},
+    "test": {
+      "dependsOn": [
+        "^test"
+      ],
+      "outputs": []
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
+      "cache": false
+    },
+    "release": {
+      "cache": false
+    }
+  }
+}

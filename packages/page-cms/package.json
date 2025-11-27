@@ -1,0 +1,38 @@
+{
+  "name": "page-cms",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && rollup -c",
+    "dev": "tsc -w -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.build.json --noEmit"
+  },
+  "peerDependencies": {
+    "next": ">=13.5.0",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "cross-fetch": "^4.0.0",
+    "node-cache": "^5.1.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.8",
+    "@rollup/plugin-node-resolve": "^15.3.1",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "rollup": "^4.41.1",
+    "typescript": "^5.4.0"
+  }
+}
