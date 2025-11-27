@@ -1,17 +1,8 @@
 import { DatabaseService } from "@/services/databaseService";
 import { type NextRequest, NextResponse } from "next/server";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function GET(req: NextRequest) {
   console.log("GET /api/database/getAllDataSources called");
-  try {
-    const auth = await getAuthenticatedUser(req, { includeWorkspace: true });
-    if (isAuthError(auth)) {
-      return NextResponse.json({ message: auth.error }, { status: auth.status });
-    }
-    const { user, workspaceId } = auth;
-
-    if (!workspaceId) {
+  try {    if (!workspaceId) {
       return NextResponse.json(
         {
           success: false,

@@ -3,23 +3,13 @@ import { addMemberToWorkspace } from "@/services/notificationServices";
 import { OrganizationService } from "@/services/organizationService";
 import { ObjectId } from "bson";
 import { type NextRequest, NextResponse } from "next/server";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 // Safely parse BETAQUE_WORKSPACE_IDS environment variable
 const BETAQUE_WORKSPACE_IDS: string[] = process.env.BETAQUE_WORKSPACE_IDS
   ? process.env.BETAQUE_WORKSPACE_IDS.split(",").filter(Boolean)
   : [];
 
 export async function GET(req: NextRequest) {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json(
-        { message: auth.error, authenticated: false },
-        { status: auth.status },
-      );
-    }
-    let { user, session } = auth;
+  try {let { user, session } = auth;
 
     if (!user) {
       return NextResponse.json(

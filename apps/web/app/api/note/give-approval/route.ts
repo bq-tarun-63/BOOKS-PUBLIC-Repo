@@ -1,16 +1,8 @@
 import { NextResponse } from "next/server";
 import { NoteService } from "@/services/noteService";
 import { canGiveApproval } from "@/utils/CheckNoteAccess/give-approval/checkAccess";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function POST(req: Request) {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status });
-    }
-    const { user } = auth;
-    if (!canGiveApproval(user)) {
+  try {    if (!canGiveApproval(user)) {
       return NextResponse.json({ error: "Forbidden: Only admin can give approval." }, { status: 403 });
     }
     const { noteId, approved, email } = await req.json();

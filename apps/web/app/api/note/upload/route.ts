@@ -4,16 +4,11 @@ import { Octokit } from "@octokit/core";
 import { type NextRequest, NextResponse } from "next/server";
 import { addOrUpdateImageStatus } from "../../../../lib/deleteNote/imageStatus/imageStatus";
 import { ObjectId } from "mongodb";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
 import { randomUUID } from "crypto";
 
-export async function POST(req: NextRequest) {
-  const auth = await getAuthenticatedUser();
-  if (isAuthError(auth)) {
+export async function POST(req: NextRequest) {  if (isAuthError(auth)) {
     return new Response(auth.error, { status: auth.status });
-  }
-  const { user } = auth;
-  const repo = process.env.GITHUB_REPO;
+  }  const repo = process.env.GITHUB_REPO;
   const token = process.env.GITHUB_TOKEN;
   const username = process.env.GITHUB_USERNAME;
   const referer = req.headers.get("referer") || "";

@@ -116,6 +116,15 @@ export function WorkspaceProvider({children} : {children : ReactNode}) {
     }
 
     useEffect(() => {
+        // Skip initialization on public note paths
+        const isPublicServer = process.env.NEXT_PUBLIC_IS_PUBLIC_SERVER === "true";
+        const isPublicPath = typeof window !== "undefined" && window.location.pathname.startsWith("/n/");
+        
+        if (isPublicServer && isPublicPath) {
+          console.log("Skipping workspace initialization on public note page");
+          return;
+        }
+
         const init = async () => {
           try {
             const data = await fetchWorkspaces();

@@ -64,6 +64,12 @@ function setWorkspaceCookie(workspaceId: string, workspaceName: string | undefin
 }
 
 async function fetchAvailableWorkspaces(): Promise<WorkspaceResponse["workspaces"]> {
+  // Skip on public server
+  const isPublicServer = process.env.NEXT_PUBLIC_IS_PUBLIC_SERVER === "true";
+  if (isPublicServer) {
+    return [];
+  }
+  
   try {
     const response = await fetch("/api/workSpace/getAll", {
       credentials: "include",
@@ -92,6 +98,13 @@ async function ensureWorkspaceCookie(force = false): Promise<boolean> {
   if (typeof document === "undefined") {
     return false;
   }
+  
+  // Skip workspace cookie logic on public server
+  const isPublicServer = process.env.NEXT_PUBLIC_IS_PUBLIC_SERVER === "true";
+  if (isPublicServer) {
+    return false;
+  }
+  
   if (!SECRET_KEY) {
     console.warn("Missing NEXT_PUBLIC_CJS_TOKEN; unable to set workspace cookie.");
     return false;

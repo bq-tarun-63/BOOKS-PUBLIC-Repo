@@ -1,16 +1,8 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongoDb/mongodb";
 import { canGetApprovedNotes } from "@/utils/CheckNoteAccess/getApprovedNotes/checkAccess";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function GET() {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ success: false, error: auth.error }, { status: auth.status });
-    }
-    const { user } = auth;
-    if (!canGetApprovedNotes({ user })) {
+  try {    if (!canGetApprovedNotes({ user })) {
       return NextResponse.json({ success: false, error: "Forbidden: Only admin can access approved notes." }, { status: 403 });
     }
     const client = await clientPromise();

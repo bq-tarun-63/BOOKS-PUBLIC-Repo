@@ -13,7 +13,9 @@
     "PINECONE_API_KEY",
     "OPENAI_API_KEY",
     "EMBEDDING_MODEL",
-    "PINECONE_INDEX"
+    "PINECONE_INDEX",
+    "IS_PUBLIC_SERVER",
+    "NEXT_PUBLIC_IS_PUBLIC_SERVER"
   ],
   "tasks": {
     "topo": {

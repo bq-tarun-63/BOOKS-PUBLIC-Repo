@@ -98,8 +98,14 @@ export async function getWithAuth<T = JsonResponse | publishResponse | unknown>(
 
     // Handle authentication errors
     if (response.status === 401) {
-      window.location.href = `${NEXTAUTH_API_URL || "http://localhost:3001"}?redirect=${encodeURIComponent(getRedirectUrl())}`;
-      throw new Error("Unauthorized: Redirecting to login...");
+      // Skip redirect on public server
+      const isPublicServer = process.env.NEXT_PUBLIC_IS_PUBLIC_SERVER === "true";
+      if (!isPublicServer) {
+        window.location.href = `${NEXTAUTH_API_URL || "http://localhost:3001"}?redirect=${encodeURIComponent(getRedirectUrl())}`;
+        throw new Error("Unauthorized: Redirecting to login...");
+      }
+      // On public server, just return the error without redirecting
+      console.log("401 error on public server - skipping redirect");
     }
 
     // Handle different error status codes
@@ -165,8 +171,14 @@ export async function postWithAuth<T = JsonResponse | publishResponse | any, D =
 
     // Handle authentication errors
     if (response.status === 401) {
-      window.location.href = `${NEXTAUTH_API_URL || "http://localhost:3001"}?redirect=${encodeURIComponent(getRedirectUrl())}`;
-      throw new Error("Unauthorized: Redirecting to login...");
+      // Skip redirect on public server
+      const isPublicServer = process.env.NEXT_PUBLIC_IS_PUBLIC_SERVER === "true";
+      if (!isPublicServer) {
+        window.location.href = `${NEXTAUTH_API_URL || "http://localhost:3001"}?redirect=${encodeURIComponent(getRedirectUrl())}`;
+        throw new Error("Unauthorized: Redirecting to login...");
+      }
+      // On public server, just return the error without redirecting
+      console.log("401 error on public server - skipping redirect");
     }
 
     // Handle different error status codes
@@ -227,8 +239,14 @@ export async function putWithAuth<T = JsonResponse, D = Record<string, unknown>>
 
     // Handle authentication errors
     if (response.status === 401) {
-      window.location.href = `${NEXTAUTH_API_URL || "http://localhost:3001"}?redirect=${encodeURIComponent(getRedirectUrl())}`;
-      throw new Error("Unauthorized: Redirecting to login...");
+      // Skip redirect on public server
+      const isPublicServer = process.env.NEXT_PUBLIC_IS_PUBLIC_SERVER === "true";
+      if (!isPublicServer) {
+        window.location.href = `${NEXTAUTH_API_URL || "http://localhost:3001"}?redirect=${encodeURIComponent(getRedirectUrl())}`;
+        throw new Error("Unauthorized: Redirecting to login...");
+      }
+      // On public server, just return the error without redirecting
+      console.log("401 error on public server - skipping redirect");
     }
 
     // Handle different error status codes
@@ -283,8 +301,14 @@ export async function deleteWithAuth<T = unknown>(
 
     // Handle authentication errors
     if (response.status === 401) {
-      window.location.href = `${NEXTAUTH_API_URL || "http://localhost:3001"}?redirect=${encodeURIComponent(getRedirectUrl())}`;
-      throw new Error("Unauthorized: Redirecting to login...");
+      // Skip redirect on public server
+      const isPublicServer = process.env.NEXT_PUBLIC_IS_PUBLIC_SERVER === "true";
+      if (!isPublicServer) {
+        window.location.href = `${NEXTAUTH_API_URL || "http://localhost:3001"}?redirect=${encodeURIComponent(getRedirectUrl())}`;
+        throw new Error("Unauthorized: Redirecting to login...");
+      }
+      // On public server, just return the error without redirecting
+      console.log("401 error on public server - skipping redirect");
     }
 
     // Handle different error status codes

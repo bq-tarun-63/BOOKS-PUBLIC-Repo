@@ -4,24 +4,14 @@ import type { NextRequest } from "next/server";
 const IS_PUBLIC_SERVER = process.env.IS_PUBLIC_SERVER === "true";
 
 export async function middleware(request: NextRequest) {
-  // Public server mode: allow public note routes without auth
-  if (IS_PUBLIC_SERVER && request.nextUrl.pathname.startsWith("/n/")) {
-    return NextResponse.next();
-  }
-
-  // Public server mode: allow public API routes without auth
-  if (IS_PUBLIC_SERVER && request.nextUrl.pathname.startsWith("/api/public/")) {
-    return NextResponse.next();
-  }
-
-  // Public server mode: block all other routes
+  // ========== PUBLIC SERVER MODE ==========
+  // Completely bypass all checks - allow everything through
   if (IS_PUBLIC_SERVER) {
-    return NextResponse.json(
-      { message: "This server only serves public notes" },
-      { status: 404 }
-    );
+    return NextResponse.next();
   }
 
+  // ========== PRIVATE SERVER MODE ==========
+  
   // 1️⃣ Skip checks for static/public/auth routes
   if (
     request.nextUrl.pathname.startsWith("/_next") ||
@@ -30,23 +20,14 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/api/covers") ||
     request.nextUrl.pathname.startsWith("/api/github/webhook") ||
     request.nextUrl.pathname.startsWith("/static") ||
-    request.nextUrl.pathname.includes(".") // Skip files with extensions
+    request.nextUrl.pathname.includes(".")
   ) {
     return NextResponse.next();
   }
 
-  // 2️⃣ Workspace redirection logic — only for root or dashboard home
+  // 2️⃣ Direct redirect to /notes for all routes on private server
   if (request.nextUrl.pathname === "/") {
-    const workspace = request.cookies.get("workspace")?.value;
-    if (workspace) {
-      // Redirect to getNoteParent/{id} if cookie exists
-      return NextResponse.redirect(
-        new URL(`/notes`, request.url)
-      );
-    }
-
-    // Redirect to workspace/getAll if cookie missing
-    return NextResponse.redirect(new URL("/user", request.url));
+    return NextResponse.redirect(new URL("/notes", request.url));
   }
 
   // 3️⃣ API authentication check

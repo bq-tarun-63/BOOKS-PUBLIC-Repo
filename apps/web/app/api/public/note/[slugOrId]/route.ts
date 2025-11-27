@@ -6,14 +6,16 @@ import type { INote } from "@/models/types/Note";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { slugOrId: string } }
+  { params }: { params: Promise<{ slugOrId: string }> }
 ) {
   try {
-    const { slugOrId } = params;
+    const { slugOrId } = await params;
 
     if (!slugOrId) {
       return NextResponse.json({ message: "Note identifier is required" }, { status: 400 });
     }
+
+    console.log(`[PUBLIC API] Looking for note with slug/id: ${slugOrId}`);
 
     const client = await clientPromise();
     const db = client.db();
@@ -22,17 +24,27 @@ export async function GET(
     let note: INote | null = null;
 
     // Try to find by publicSlug first
+    console.log(`[PUBLIC API] Searching by publicSlug: ${slugOrId}`);
     note = await collection.findOne({ publicSlug: slugOrId, isPubliclyPublished: true });
+    
+    if (note) {
+      console.log(`[PUBLIC API] Found note by publicSlug:`, note.title);
+    }
 
     // If not found by slug, try by ID
     if (!note && ObjectId.isValid(slugOrId)) {
+      console.log(`[PUBLIC API] Searching by ObjectId: ${slugOrId}`);
       note = await collection.findOne({ 
         _id: new ObjectId(slugOrId), 
         isPubliclyPublished: true 
       });
+      if (note) {
+        console.log(`[PUBLIC API] Found note by ID:`, note.title);
+      }
     }
 
     if (!note) {
+      console.log(`[PUBLIC API] Note not found for slug/id: ${slugOrId}`);
       return NextResponse.json(
         { message: "Note not found or not published" },
         { status: 404 }

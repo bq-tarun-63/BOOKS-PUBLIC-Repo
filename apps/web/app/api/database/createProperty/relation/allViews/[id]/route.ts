@@ -1,19 +1,10 @@
 import { DatabaseService } from "@/services/databaseService";
 import { type NextRequest, NextResponse } from "next/server";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ message: auth.error }, { status: auth.status });
-    }
-    const { user, session } = auth;
-
-    // Parse params
+  try {    // Parse params
     const { id } = await params;
     if (!session?.user?.email) {
       throw new Error("Email is required");

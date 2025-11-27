@@ -2,16 +2,12 @@
 // import { NoteService } from "@/services/noteService";
 // import { canPublishNote } from "@/utils/CheckNoteAccess/publishNote/checkAccess";
 // import { adapterForGetNote } from "@/lib/adapter/adapterForGetNote";
-// import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
-// export async function POST(req: NextRequest) {
+// // export async function POST(req: NextRequest) {
 //   try {
-//     const auth = await getAuthenticatedUser();
-//     if (isAuthError(auth)) {
+////     if (isAuthError(auth)) {
 //       return NextResponse.json({ message: auth.error }, { status: auth.status });
 //     }
-//     const { user } = auth;
-//     const body = await req.json();
+////     const body = await req.json();
 //     const { id: originalNoteId } = body;
 //     if (!originalNoteId || typeof originalNoteId !== "string") {
 //       return NextResponse.json({ message: "Note ID is required" }, { status: 400 });

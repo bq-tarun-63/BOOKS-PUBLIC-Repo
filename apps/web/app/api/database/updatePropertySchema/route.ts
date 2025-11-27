@@ -1,17 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { DatabaseService } from "@/services/databaseService";
 import { ObjectId } from "mongodb";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function POST(req: NextRequest) {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ message: auth.error }, { status: auth.status });
-    }
-    const { user } = auth;
-
-    // Parse request body
+  try {    // Parse request body
     const body = await req.json();
     const {
       dataSourceId,

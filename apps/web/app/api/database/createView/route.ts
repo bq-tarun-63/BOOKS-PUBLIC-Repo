@@ -2,17 +2,8 @@ import { DatabaseService } from "@/services/databaseService";
 import { type NextRequest, NextResponse } from "next/server";
 import type { ViewTypeWithIconAndTitle } from "@/models/types/VeiwDatabase";
 import { ObjectId } from "mongodb";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function POST(req: NextRequest) {
-  try {
-    const auth = await getAuthenticatedUser(req, { includeWorkspace: true });
-    if (isAuthError(auth)) {
-      return NextResponse.json({ message: auth.error }, { status: auth.status });
-    }
-    const { user, workspaceId } = auth;
-
-    if (!workspaceId) {
+  try {    if (!workspaceId) {
       return NextResponse.json({ message: "Workspace ID is required" }, { status: 400 });
     }
     

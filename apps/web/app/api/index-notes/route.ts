@@ -1,16 +1,7 @@
 import { VectorService } from "@/services/vectorService";
 import { type NextRequest, NextResponse } from "next/server";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function POST(req: NextRequest) {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ message: auth.error }, { status: auth.status });
-    }
-    const { session } = auth;
-
-    if (!session?.user?.email) {
+  try {    if (!session?.user?.email) {
       throw new Error("Email is required");
     }
     const adminEmails = process.env.ADMINS ? process.env.ADMINS.split(",") : [];

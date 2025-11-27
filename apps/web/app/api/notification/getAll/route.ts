@@ -1,15 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { NotificationService } from "@/services/notificationServices";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function POST(req: NextRequest) {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status });
-    }
-    const { session } = auth;
-    if (!session?.user?.email) {
+  try {    if (!session?.user?.email) {
       throw new Error("Email is required");
     }
     const notifications = await NotificationService.getNotificationsForUser({

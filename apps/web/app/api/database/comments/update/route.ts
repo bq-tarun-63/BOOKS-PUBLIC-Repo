@@ -1,14 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { DatabaseService } from "@/services/databaseService";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
-export async function POST(req: NextRequest) {
-  const auth = await getAuthenticatedUser();
-  if (isAuthError(auth)) {
-    return NextResponse.json({ message: auth.error }, { status: auth.status });
-  }
-  const { user } = auth;
-   const body = await req.json();
+export async function POST(req: NextRequest) {   const body = await req.json();
    const {commentId,text,noteId} = body;
    if(!commentId  || !text || !noteId){
     return NextResponse.json({message:"commentId,text and noteId are required"},{status:400});

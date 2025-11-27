@@ -3,16 +3,8 @@ import { removeNoteAccessForUser, NoteService } from "@/services/noteService";
 import { checkNoteAccess } from "@/utils/checkNoteAccess";
 import { canRemoveShareAccess } from "@/utils/CheckNoteAccess/removeShareAccess/checkAccess";
 import { adapterForGetNote } from "@/lib/adapter/adapterForGetNote";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function POST(req: NextRequest) {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status });
-    }
-    const { user } = auth;
-    const userId = user._id;
+  try {    const userId = user._id;
     const { noteId } = await req.json();
     if (!user || !userId || !noteId) {
       return NextResponse.json({ error: "Missing userId or noteId" }, { status: 400 });

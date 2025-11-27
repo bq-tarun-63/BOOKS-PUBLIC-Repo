@@ -2,16 +2,8 @@ import { NoteService } from "@/services/noteService";
 import { canUpdateNote } from "@/utils/CheckNoteAccess/updateNote/checkAccess";
 import { type NextRequest, NextResponse } from "next/server";
 import { adapterForGetNote } from "@/lib/adapter/adapterForGetNote";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function PUT(req: NextRequest) {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ message: auth.error }, { status: auth.status });
-    }
-    const { user } = auth;
-    const userId = user.id;
+  try {    const userId = user.id;
     const body = await req.json();
     const { id, title, parentId, icon} = body;
     if (!title || typeof title !== "string") {

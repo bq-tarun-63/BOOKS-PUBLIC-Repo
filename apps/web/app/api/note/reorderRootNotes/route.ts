@@ -3,20 +3,12 @@ import { type NextRequest, NextResponse } from "next/server";
 import { canReorderRootNotes } from "@/utils/CheckNoteAccess/reorderRootNotes/checkAccess";
 import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongoDb/mongodb";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 function orderedIdsToObjectIds(orderedIds: string[]) {
   return orderedIds.map(id => new ObjectId(id));
 }
 
 export async function PUT(req: NextRequest) {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ message: auth.error }, { status: auth.status });
-    }
-    const { user } = auth;
-    const body = await req.json();
+  try {    const body = await req.json();
     const { orderedIds } = body as { orderedIds: string[] };
     if (!Array.isArray(orderedIds)) {
       return NextResponse.json({ message: "Invalid payload" }, { status: 400 });

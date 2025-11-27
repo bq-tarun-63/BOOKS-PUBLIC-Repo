@@ -2,16 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { NoteService } from "@/services/noteService";
 import { canTogglePublicNote } from "@/utils/CheckNoteAccess/togglePublicNote/checkAccess";
 import { adapterForGetNote } from "@/lib/adapter/adapterForGetNote";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function PUT(req: NextRequest) {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ message: auth.error }, { status: auth.status });
-    }
-    const { user } = auth;
-    const body = await req.json();
+  try {    const body = await req.json();
     const { noteId, isPublicNote, isRestrictedPage } = body;
 
     if (!noteId || typeof isPublicNote !== "boolean" || typeof isRestrictedPage !== "boolean") {

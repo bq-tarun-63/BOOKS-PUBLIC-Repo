@@ -1,16 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { DatabaseService } from "@/services/databaseService";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function POST(req: NextRequest) {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ message: auth.error }, { status: auth.status });
-    }
-    const { user } = auth;
-
-    const body = await req.json();
+  try {    const body = await req.json();
     const { viewId, viewTypeId, dataSourceId } = body;
 
     if (!viewId || !viewTypeId || !dataSourceId) {

@@ -1,16 +1,7 @@
 import { DatabaseService } from "@/services/databaseService";
 import { type NextRequest, NextResponse } from "next/server";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function GET(req: NextRequest) {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ message: auth.error }, { status: auth.status });
-    }
-    const { user } = auth;
-
-    // 3. Get viewId from query parameters
+  try {    // 3. Get viewId from query parameters
     const { searchParams } = new URL(req.url);
     const viewId = searchParams.get("viewId");
 
@@ -54,14 +45,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ message: auth.error }, { status: auth.status });
-    }
-    const { user } = auth;
-
-    // Parse request body
+  try {    // Parse request body
     const body = await req.json();
     const { viewId } = body;
 

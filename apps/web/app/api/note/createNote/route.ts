@@ -3,17 +3,8 @@ import { type NextRequest, NextResponse } from "next/server";
 import { canCreateNote } from "@/utils/CheckNoteAccess/createNote/checkAccess";
 import { adapterForGetNote } from "@/lib/adapter/adapterForGetNote";
 import { adapterForCreateNote } from "@/lib/adapter/adapterForCreateNote";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function POST(req: NextRequest) {
-  try {
-    const auth = await getAuthenticatedUser(req, { includeWorkspace: true });
-    if (isAuthError(auth)) {
-      return NextResponse.json({ message: auth.error }, { status: auth.status });
-    }
-    const { user, workspaceId } = auth;
-
-    const body = await req.json();
+  try {    const body = await req.json();
     let { title, parentId = null, noteId, isRestrictedPage, icon = null, isPublicNote = false, databaseViewId = null, databaseProperties = null, databaseNoteId = null, workAreaId = null } = body;
     if (!title || typeof title !== "string") {
       return NextResponse.json({ message: "Title is required" }, { status: 400 });
@@ -47,6 +38,7 @@ export async function POST(req: NextRequest) {
     databaseNoteId,
     workAreaId,
     isTemplate: false,
+    isPubliclyPublished: false,
   }); // always pass parentNote
 
     // const newNote = await NoteService.createNote(title, user.id, user.email, parentId, icon, isPublicNote ,isRestrictedPage, );

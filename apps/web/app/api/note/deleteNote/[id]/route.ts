@@ -3,16 +3,8 @@ import { type NextRequest, NextResponse } from "next/server";
 import { canDeleteNote } from "@/utils/CheckNoteAccess/deleteNote/checkAccess";
 import { adapterForGetNote } from "@/lib/adapter/adapterForGetNote";
 import { adapterForDeleteNote } from "@/lib/adapter/adapterForDeleteNote";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ message: auth.error }, { status: auth.status });
-    }
-    const { user } = auth;
-    const { id } = await params;
+  try {    const { id } = await params;
     if (!id) {
       return NextResponse.json({ message: "Missing noteId in URL params" }, { status: 400 });
     }

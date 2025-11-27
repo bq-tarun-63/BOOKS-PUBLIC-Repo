@@ -3,16 +3,8 @@ import { NoteService } from "@/services/noteService";
 import { canShareNote } from "@/utils/CheckNoteAccess/share/checkAccess";
 import { Note } from "@/models/types/Note";
 import { adapterForGetNote } from "@/lib/adapter/adapterForGetNote";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function POST(req: NextRequest) {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status });
-    }
-    const { user } = auth;
-    const body = await req.json();
+  try {    const body = await req.json();
     const {noteId} = body ;
     const note = await adapterForGetNote({ id: noteId, includeContent: false });
     const hasAccess = canShareNote({ note, user });

@@ -1,16 +1,7 @@
 import { NoteService } from "@/services/noteService";
 import { type NextRequest, NextResponse } from "next/server";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function GET(req: NextRequest) {
-  try {
-    const auth = await getAuthenticatedUser(req, { includeWorkspace: true });
-    if (isAuthError(auth)) {
-      return NextResponse.json({ message: auth.error }, { status: auth.status });
-    }
-    const { user, workspaceId } = auth;
-
-    if (!workspaceId || workspaceId === "") {
+  try {    if (!workspaceId || workspaceId === "") {
       return NextResponse.json({ message: "Workspace not found" }, { status: 404 });
     }
     if (!user.id) {

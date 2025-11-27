@@ -1,18 +1,8 @@
 import { DatabaseService } from "@/services/databaseService";
 import { NextRequest, NextResponse } from "next/server";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function GET(req: NextRequest,{ params }: { params: Promise<{ id: string }> }){
   try {
-    // 1. Authentication check
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ message: auth.error }, { status: auth.status });
-    }
-    
-    const { user, session } = auth;
-
-    // 3. Get collection ID from params
+    // 1. Authentication check    // 3. Get collection ID from params
     const { id } = await params;
     if (!id) {
       return NextResponse.json({ 

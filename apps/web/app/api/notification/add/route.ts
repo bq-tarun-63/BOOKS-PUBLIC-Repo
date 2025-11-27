@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { addNotification } from "@/services/notificationServices";
 const SECRET_KEY = process.env.NEXT_PUBLIC_CJS_TOKEN;
 import CryptoJS from "crypto-js";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function POST(req: NextRequest) {
   try {
     const {
@@ -14,14 +12,7 @@ export async function POST(req: NextRequest) {
       message = "",
       type,
       sentTo = [],
-    } = await req.json();
-    const auth = await getAuthenticatedUser(undefined, { createUserIfNotFound: true });
-    if (isAuthError(auth)) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status });
-    }
-    const { user } = auth;
-
-    const notification = await addNotification({
+    } = await req.json();    const notification = await addNotification({
       notificationId,
       workspaceId,
       type,

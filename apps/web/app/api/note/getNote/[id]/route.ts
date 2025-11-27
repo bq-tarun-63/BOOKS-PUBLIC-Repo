@@ -2,17 +2,8 @@ import { INoteWithContent, NoteService } from "@/services/noteService";
 import { canReadNote } from "@/utils/CheckNoteAccess/getNote/checkAccess";
 import { type NextRequest, NextResponse } from "next/server";
 import { adapterForGetNote } from "@/lib/adapter/adapterForGetNote";
-import { getAuthenticatedUser, isAuthError } from "@/lib/utils/auth";
-
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  try {
-    const auth = await getAuthenticatedUser();
-    if (isAuthError(auth)) {
-      return NextResponse.json({ message: auth.error }, { status: auth.status });
-    }
-    const { user } = auth;
-
-    const { id } = await params;
+  try {    const { id } = await params;
     const includeContentHeader = req.headers.get("include-content");
     const includeContent = includeContentHeader !== null ? includeContentHeader === "true" : true;
     const contentPathHeader = req.headers.get("content-path");
