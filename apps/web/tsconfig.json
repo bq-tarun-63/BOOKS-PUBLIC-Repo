@@ -30,11 +30,22 @@
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "public-api-services/**/*.ts",
+    "components/ErrorBoundary.tsx",
+    "components/tailwind/ErrorPage.tsx",
+    "models/**/*.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "components/**/*",
+    "contexts",
+    "hooks",
+    "lib",
+    "services",
+    "packages",
+    "public"
   ]
 }

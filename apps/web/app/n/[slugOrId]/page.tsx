@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { EditorContent, EditorRoot, type JSONContent } from "novel";
-import { defaultExtensions } from "@/components/tailwind/extensions";
+import { EditorContent, EditorRoot, Placeholder, StarterKit, type JSONContent } from "novel";
 
 interface PublicNote {
   id: string;
   title: string;
+  content: string; // Content is now included in the API response
   contentPath: string;
   commitSha: string;
   icon: string;
@@ -16,6 +16,11 @@ interface PublicNote {
   updatedAt: string;
   publicSlug?: string;
   publicPublishedAt?: string;
+  children?: Array<{
+    _id: string;
+    title: string;
+    icon: string;
+  }>;
 }
 
 export default function PublicNotePage() {
@@ -27,27 +32,168 @@ export default function PublicNotePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Sanitize content to remove unsupported node types
+   * This filters out custom extensions that aren't in StarterKit
+   */
+  const sanitizeContent = (content: JSONContent | null | undefined): JSONContent => {
+    if (!content || typeof content !== "object") {
+      return { type: "doc", content: [] };
+    }
+
+    // List of unsupported node types that StarterKit doesn't support
+    const unsupportedTypes = [
+      "reactComponentBlock",
+      "databaseView",
+      "databaseRow",
+      "databaseColumn",
+      "databaseCell",
+      // Add other custom types that StarterKit doesn't support
+    ];
+
+    // If this node type is unsupported, return null (will be filtered out)
+    if (content.type && unsupportedTypes.includes(content.type)) {
+      return { type: "doc", content: [] };
+    }
+
+    // If it's a doc, sanitize its content
+    if (content.type === "doc") {
+      const sanitizedChildren = (content.content || [])
+        .map((node) => sanitizeContent(node))
+        .filter((node) => {
+          // Filter out empty docs and unsupported types
+          if (!node || !node.type) return false;
+          if (node.type === "doc" && (!node.content || node.content.length === 0)) return false;
+          return !unsupportedTypes.includes(node.type);
+        });
+
+      return {
+        ...content,
+        content: sanitizedChildren,
+      };
+    }
+
+    // For other node types, recursively sanitize children
+    if (content.content && Array.isArray(content.content)) {
+      const sanitizedChildren = content.content
+        .map((child) => sanitizeContent(child))
+        .filter((node) => {
+          if (!node || !node.type) return false;
+          return !unsupportedTypes.includes(node.type);
+        });
+
+      return {
+        ...content,
+        content: sanitizedChildren,
+      };
+    }
+
+    return content;
+  };
+
   useEffect(() => {
     const fetchNote = async () => {
       try {
-        // Fetch note metadata
-        const noteResponse = await fetch(`/api/public/note/${slugOrId}`);
+        // Fetch note with content (API now returns content directly)
+        const noteResponse = await fetch(`/api/public/note/${slugOrId}`, {
+          headers: {
+            "include-content": "true",
+          },
+        });
+        
         if (!noteResponse.ok) {
           throw new Error("Note not found or not published");
         }
+        
         const noteData = await noteResponse.json();
+        console.log("Note data received:", {
+          title: noteData.title,
+          hasContent: !!noteData.content,
+          contentType: typeof noteData.content,
+          contentLength: noteData.content?.length || 0,
+          contentPreview: typeof noteData.content === "string" 
+            ? noteData.content.substring(0, 200) 
+            : JSON.stringify(noteData.content).substring(0, 200),
+        });
+        
         setNote(noteData);
 
-        // Fetch note content from GitHub
-        const contentResponse = await fetch(
-          `https://raw.githubusercontent.com/${process.env.NEXT_PUBLIC_GITHUB_REPO || ""}/${noteData.commitSha}/${noteData.contentPath}`
-        );
-        if (!contentResponse.ok) {
-          throw new Error("Failed to fetch note content");
+        // Parse content if it's a string, otherwise use directly
+        if (noteData.content) {
+          try {
+            // Content might be a JSON string or already parsed
+            let parsedContent;
+            if (typeof noteData.content === "string") {
+              console.log("Step 1: Content is a string, parsing JSON...");
+              // Try to parse as JSON
+              if (noteData.content.trim().startsWith("{")) {
+                parsedContent = JSON.parse(noteData.content);
+                console.log("Step 2: JSON parsed successfully:", {
+                  hasOnlineContent: !!parsedContent.online_content,
+                  keys: Object.keys(parsedContent),
+                });
+              } else {
+                // If it's not JSON, it might be empty or in a different format
+                console.warn("Content is a string but doesn't look like JSON:", noteData.content.substring(0, 100));
+                parsedContent = { type: "doc", content: [] };
+              }
+            } else {
+              console.log("Step 1: Content is already an object");
+              parsedContent = noteData.content;
+            }
+            
+            // Check if content has online_content wrapper (like in the main app)
+            if (parsedContent?.online_content) {
+              console.log("Step 3: Found online_content wrapper, extracting...");
+              parsedContent = parsedContent.online_content;
+              console.log("Step 4: Extracted content:", {
+                type: parsedContent?.type,
+                hasContent: !!parsedContent?.content,
+                contentLength: parsedContent?.content?.length || 0,
+              });
+            } else {
+              console.log("Step 3: No online_content wrapper, using content directly:", {
+                type: parsedContent?.type,
+                hasContent: !!parsedContent?.content,
+              });
+            }
+            
+            // Validate that it's a proper ProseMirror document
+            if (parsedContent?.type === "doc") {
+              console.log("✅ Step 5: Content is valid doc, setting content:", {
+                type: parsedContent.type,
+                hasContent: !!parsedContent.content,
+                contentLength: parsedContent.content?.length || 0,
+                firstContentItem: parsedContent.content?.[0],
+              });
+              
+              // Sanitize content to remove unsupported node types
+              const sanitized = sanitizeContent(parsedContent);
+              console.log("Step 6: Sanitized content:", {
+                originalLength: parsedContent.content?.length || 0,
+                sanitizedLength: sanitized.content?.length || 0,
+              });
+              
+              setContent(sanitized);
+            } else {
+              console.warn("❌ Step 5: Content is not a valid doc structure:", {
+                parsedContent,
+                type: parsedContent?.type,
+                keys: parsedContent ? Object.keys(parsedContent) : [],
+              });
+              setContent({ type: "doc", content: [] });
+            }
+          } catch (parseError) {
+            console.error("❌ Error parsing note content:", parseError);
+            console.error("Raw content:", noteData.content);
+            // If parsing fails, try to use empty content
+            setContent({ type: "doc", content: [] });
+          }
+        } else {
+          console.warn("No content field in note data");
+          // No content available
+          setContent({ type: "doc", content: [] });
         }
-        const contentText = await contentResponse.text();
-        const contentJson = JSON.parse(contentText);
-        setContent(contentJson);
       } catch (err) {
         console.error("Error loading public note:", err);
         setError(err instanceof Error ? err.message : "Failed to load note");
@@ -87,6 +233,19 @@ export default function PublicNotePage() {
       </div>
     );
   }
+
+
+
+  const publicExtensions = [
+    StarterKit.configure({
+      paragraph: {
+        HTMLAttributes: { class: "public-note-paragraph" },
+      },
+    }),
+    Placeholder.configure({
+      placeholder: "This note has no content yet.",
+    }),
+  ];
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
@@ -129,18 +288,21 @@ export default function PublicNotePage() {
 
         {/* Editor content (read-only) */}
         <div className="prose dark:prose-invert max-w-none">
-          <EditorRoot>
-            <EditorContent
-              initialContent={content}
-              extensions={defaultExtensions}
-              editable={false}
-              editorProps={{
-                attributes: {
-                  class: "prose dark:prose-invert focus:outline-none max-w-none",
-                },
-              }}
-            />
-          </EditorRoot>
+          {content && (
+            <EditorRoot>
+              <EditorContent
+                initialContent={content}
+                extensions={publicExtensions}
+                editable={false}
+                immediatelyRender={false}
+                editorProps={{
+                  attributes: {
+                    class: "prose dark:prose-invert focus:outline-none max-w-none",
+                  },
+                }}
+              />
+            </EditorRoot>
+          )}
         </div>
 
         {/* Footer info */}

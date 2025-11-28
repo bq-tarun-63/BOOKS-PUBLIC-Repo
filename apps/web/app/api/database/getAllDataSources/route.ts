@@ -1,4 +1,4 @@
-import { DatabaseService } from "@/services/databaseService";
+import { PublicDatabaseService } from "@/public-api-services/public-services";
 import { type NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   console.log("GET /api/database/getAllDataSources called");
@@ -18,7 +18,9 @@ export async function GET(req: NextRequest) {
     }
 
     // Get all data sources for the workspace
-    const dataSources = await DatabaseService.getAllDataSourcesByWorkspace({ workspaceId });
+    const dataSources = await PublicDatabaseService.getAllDataSourcesByWorkspace({
+      workspaceId,
+    });
 
     return NextResponse.json({
       success: true,

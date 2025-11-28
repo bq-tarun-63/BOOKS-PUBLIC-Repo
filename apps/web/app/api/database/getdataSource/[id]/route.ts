@@ -1,4 +1,4 @@
-import { DatabaseService } from "@/services/databaseService";
+import { PublicDatabaseService } from "@/public-api-services/public-services";
 import { type NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {    // 3. Get collection ID from params
@@ -10,7 +10,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     // 4. Get collection by ID
-    const collection = await DatabaseService.getDataSourceById({ dataSourceId: id });
+    const collection = await PublicDatabaseService.getDataSourceById({ dataSourceId: id });
     if (!collection) {
       return NextResponse.json({ 
         message: "Collection not found" 

@@ -37,6 +37,8 @@ interface GitHubApiError extends Error {
 // ============================================================================
 
 const uri = process.env.MONGODB_URI || "";
+const dbName = process.env.MONGODB_DB_NAME; // Optional: specify database name explicitly
+
 const mongoOptions = {
   maxPoolSize: 10,
   minPoolSize: 2,
@@ -50,11 +52,25 @@ let mongoClientPromise: Promise<MongoClient> | null = null;
 async function getMongoClient(): Promise<MongoClient> {
   if (mongoClientPromise) return mongoClientPromise;
 
+  if (!uri) {
+    throw new Error("MONGODB_URI environment variable is not set!");
+  }
+
+  console.log("🔌 Connecting to MongoDB...");
+  console.log(`   URI: ${uri.replace(/\/\/([^:]+):([^@]+)@/, '//$1:****@')}`);
+  if (dbName) {
+    console.log(`   Database: ${dbName} (explicitly set)`);
+  } else {
+    console.log("   Database: (using default from URI)");
+  }
+
   mongoClient = new MongoClient(uri, mongoOptions);
   mongoClientPromise = mongoClient
     .connect()
     .then((c) => {
+      const db = dbName ? c.db(dbName) : c.db();
       console.log("✅ MongoDB connected (public-services)");
+      console.log(`   Database in use: ${db.databaseName}`);
       return c;
     })
     .catch((err) => {
@@ -64,6 +80,14 @@ async function getMongoClient(): Promise<MongoClient> {
     });
 
   return mongoClientPromise;
+}
+
+/**
+ * Get the MongoDB database instance with the correct database name
+ */
+async function getDatabase() {
+  const client = await getMongoClient();
+  return dbName ? client.db(dbName) : client.db();
 }
 
 // ============================================================================
@@ -243,8 +267,7 @@ export const PublicNoteService = {
     }[] = [];
 
     if (!includeContent || contentPath === "") {
-      const client = await getMongoClient();
-      const db = client.db();
+      const db = await getDatabase();
       const collection = db.collection<INote>("notes");
 
       let noteObjectId: ObjectId;
@@ -391,8 +414,7 @@ export async function adapterForGetNote({
 export const PublicAuditService = {
   async getNoteHistory({ noteId }: { noteId: string }): Promise<IActivityLog[]> {
     try {
-      const client = await getMongoClient();
-      const db = client.db();
+      const db = await getDatabase();
       const auditCollection = db.collection<IActivityLog>("audit_logs");
 
       const history = await auditCollection
@@ -417,8 +439,7 @@ export const PublicDatabaseService = {
    * Get all data sources by workspace
    */
   async getAllDataSourcesByWorkspace({ workspaceId }: { workspaceId: string }) {
-    const client = await getMongoClient();
-    const db = client.db();
+    const db = await getDatabase();
     const dataSourceCollection = db.collection<IDatabaseSource>("databaseSources");
 
     if (!workspaceId) {
@@ -437,8 +458,7 @@ export const PublicDatabaseService = {
    * Get data source by ID
    */
   async getDataSourceById({ dataSourceId }: { dataSourceId: string }) {
-    const client = await getMongoClient();
-    const db = client.db();
+    const db = await getDatabase();
     const dataSourceCollection = db.collection<IDatabaseSource>("databaseSources");
     
     const dataSource = await dataSourceCollection.findOne({ _id: new ObjectId(dataSourceId) });
@@ -457,8 +477,7 @@ export const PublicDatabaseService = {
    * Get collection (view) by ID
    */
   async getCollectionById({ viewId }: { viewId: string }) {
-    const client = await getMongoClient();
-    const db = client.db();
+    const db = await getDatabase();
     const viewCollections = db.collection<IVeiwDatabase>("viewDatabases");
     const databaseSourcesCollection = db.collection<IDatabaseSource>("databaseSources");
 
@@ -505,6 +524,7 @@ export const PublicDatabaseService = {
 
 export {
   getMongoClient as clientPromise,
+  getDatabase,
   clusterManager,
   octokit,
   owner,
