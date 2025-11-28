@@ -2,7 +2,12 @@ import { DatabaseService } from "@/services/databaseService";
 import { type NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   console.log("GET /api/database/getAllDataSources called");
-  try {    if (!workspaceId) {
+  try {
+    // Get workspaceId from query params (no auth check on public server)
+    const { searchParams } = new URL(req.url);
+    const workspaceId = searchParams.get("workspaceId");
+    
+    if (!workspaceId) {
       return NextResponse.json(
         {
           success: false,
@@ -12,7 +17,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // 4. Get all data sources for the workspace
+    // Get all data sources for the workspace
     const dataSources = await DatabaseService.getAllDataSourcesByWorkspace({ workspaceId });
 
     return NextResponse.json({

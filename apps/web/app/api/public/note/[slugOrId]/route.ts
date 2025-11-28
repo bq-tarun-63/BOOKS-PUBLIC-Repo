@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { adapterForGetNote } from "@/lib/adapter/adapterForGetNote";
 import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongoDb/mongodb";
 import type { INote } from "@/models/types/Note";
@@ -26,7 +25,7 @@ export async function GET(
     // Try to find by publicSlug first
     console.log(`[PUBLIC API] Searching by publicSlug: ${slugOrId}`);
     note = await collection.findOne({ publicSlug: slugOrId, isPubliclyPublished: true });
-    
+
     if (note) {
       console.log(`[PUBLIC API] Found note by publicSlug:`, note.title);
     }
@@ -34,9 +33,9 @@ export async function GET(
     // If not found by slug, try by ID
     if (!note && ObjectId.isValid(slugOrId)) {
       console.log(`[PUBLIC API] Searching by ObjectId: ${slugOrId}`);
-      note = await collection.findOne({ 
-        _id: new ObjectId(slugOrId), 
-        isPubliclyPublished: true 
+      note = await collection.findOne({
+        _id: new ObjectId(slugOrId),
+        isPubliclyPublished: true
       });
       if (note) {
         console.log(`[PUBLIC API] Found note by ID:`, note.title);
@@ -58,7 +57,7 @@ export async function GET(
       );
     }
 
-    // Return only safe fields for public consumption
+    // Return only safe fields for public consumption (no user data)
     const safeNote = {
       id: note._id?.toString(),
       title: note.title,
